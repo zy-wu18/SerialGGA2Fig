@@ -1,0 +1,61 @@
+close all; fclose all;
+
+spl = serialportlist("available");
+spl = sort(spl, "ascend");
+s = serialport(spl(end), 921600);
+configureTerminator(s, 'CR/LF');
+writeline(s, 'gnss -debug on');
+
+SatObsv = struct("Stat", 0, "El", NaN, "Az", NaN, "CNR", NaN);
+PvtObsv = struct("Lat", NaN, "Lon", NaN, "Time", NaT, "Vel", [NaN, NaN]);
+
+win_len = 50;
+total_len = 1000;
+i = 1;
+bds_arr = repmat(SatObsv, [64, win_len]);
+gps_arr = repmat(SatObsv, [32, win_len]);
+gln_arr = repmat(SatObsv, [24, win_len]);
+qzn_arr = repmat(SatObsv, [ 4, win_len]);
+gal_arr = repmat(SatObsv, [30, win_len]);
+pvt_arr = repmat(PvtObsv, [ 1, win_len]);
+
+fig = figure('Position', [100, 100, 1024, 768]);
+while(i < total_len)
+    line = readline(s);
+    if(~startsWith(line, '$'))
+        continue;
+    end
+    nmea_words = strsplit(line, ',', 'CollapseDelimiters', false);
+    nmea_type = nmea_words(1);
+    nmea_data = nmea_words(2:end-1);
+    switch(nmea_type)
+        case '$GBGSV' % BDS
+            bds_arr(:, i) = gsv2satobsv(nmea_data, [1, 64]);
+        case '$GPGSV' % GPS
+            gps_arr(:, i) = gsv2satobsv(nmea_data, [1, 32]);
+        case '$GQGSV' % QZSS
+            qzn_arr(:, i) = gsv2satobsv(nmea_data, [1,  4]);
+        case '$GLGSV' % GLONASS
+            gln_arr(:, i) = gsv2satobsv(nmea_data, [65,88]);
+        case '$GAGSV' % Galileo
+            gln_arr(:, i) = gsv2satobsv(nmea_data, [1, 30]);
+        case '$GNGGA' % GNSS Fix Data
+        case '$GNRMC' % Recommanded compressed PVT
+            if(i + 1 > win_len)
+                bds_arr(1:end-1) = bds_arr(2:end);
+                gps_arr(1:end-1) = gps_arr(2:end);
+                gln_arr(1:end-1) = gln_arr(2:end);
+                qzn_arr(1:end-1) = qzn_arr(2:end);
+                gal_arr(1:end-1) = gal_arr(2:end);
+                pvt_arr(1:end-1) = pvt_arr(2:end);
+                pvt_arr(end) = rmc2pvtobsv(nmea_data);
+            else
+                pvt_arr(i) = rmc2pvtobsv(nmea_data);
+                i = i + 1;
+            end
+        case '$GNZDA' % Zulu-time & DAte
+        otherwise %do nothing
+    end
+    pltObsv(bds_arr, gps_arr, gln_arr, qzn_arr, gal_arr, );
+end
+s.delete;
