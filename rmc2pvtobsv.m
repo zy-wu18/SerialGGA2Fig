@@ -10,9 +10,9 @@ function pvt_arr = rmc2pvtobsv(nmea_data)
     pvt_arr.Time.Hour = floor(tod/1e4);
     pvt_arr.Time.Minute=floor(mod(tod, 1e4)/1e2);
     pvt_arr.Time.Second=floor(mod(tod, 1e2));
-    pvt_arr.Lat = (nmea_data(3))/100;
-    pvt_arr.Lon = (nmea_data(5))/100;
-    pvt_arr.Vel(1) = nmea_data(7);
+    pvt_arr.Lat = (nmea_data(3))/100; % degree
+    pvt_arr.Lon = (nmea_data(5))/100; % degree
+    pvt_arr.Vel(1) = nmea_data(7)*1.852; % Knot to km/h
     pvt_arr.Vel(2) = nmea_data(8);
 end
 
