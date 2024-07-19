@@ -1,5 +1,8 @@
 close all; fclose all;
 
+try s.delete
+catch WE
+end
 spl = serialportlist("available");
 spl = sort(spl, "ascend");
 s = serialport(spl(end), 921600);
@@ -10,7 +13,7 @@ SatObsv = struct("Stat", 0, "El", NaN, "Az", NaN, "CNR", NaN);
 PvtObsv = struct("Lat", NaN, "Lon", NaN, "Time", NaT, "Vel", [NaN, NaN]);
 
 win_len = 60;
-total_len = 120;
+total_len = 300;
 i = 1;
 t = 1;
 bds_arr = repmat(SatObsv, [64, win_len]);
@@ -20,7 +23,8 @@ qzn_arr = repmat(SatObsv, [ 4, win_len]);
 gal_arr = repmat(SatObsv, [30, win_len]);
 pvt_arr = repmat(PvtObsv, [ 1, win_len]);
 
-fig = figure('Position', [100, 100, 1024, 640]);
+fig = figure('Position', [100, 100, 1024, 640], ...
+    'Name', 'SerialNmea2Fig', 'NumberTitle', 'off');
 while(t < total_len)
     try
         line = readline(s);

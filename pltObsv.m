@@ -21,19 +21,19 @@ function pltObsv(t, bds_arr, gps_arr, gln_arr, qzn_arr, gal_arr, pvt_arr)
     subplot(232); hold off; plot(0); hold on;
     phi = reshape([bds_arr(:,:).El]/180*pi, [1, 64*L]);
     theta = reshape([bds_arr(:,:).Az]/180*pi, [1, 64*L]);
-    scatter(cos(phi).*sin(phi), cos(phi).*sin(theta), 108, 'r.');
+    scatter(cos(phi).*cos(theta), cos(phi).*sin(theta), 108, 'r.');
     phi = reshape([gps_arr(:,:).El]/180*pi, [1, 32*L]);
     theta = reshape([gps_arr(:,:).Az]/180*pi, [1, 32*L]);
-    scatter(cos(phi).*sin(phi), cos(phi).*sin(theta), 108, 'm.');
+    scatter(cos(phi).*cos(theta), cos(phi).*sin(theta), 108, 'm.');
     phi = reshape([qzn_arr(:,:).El]/180*pi, [1, 4*L]);
     theta = reshape([qzn_arr(:,:).Az]/180*pi, [1, 4*L]);
-    scatter(cos(phi).*sin(phi), cos(phi).*sin(theta), 18, 'mo');
+    scatter(cos(phi).*cos(theta), cos(phi).*sin(theta), 18, 'mo');
     phi = reshape([gln_arr(:,:).El]/180*pi, [1,24*L]);
     theta = reshape([gln_arr(:,:).Az]/180*pi, [1,24*L]);
-    scatter(cos(phi).*sin(phi), cos(phi).*sin(theta), 108, 'b.');
+    scatter(cos(phi).*cos(theta), cos(phi).*sin(theta), 108, 'b.');
     phi = reshape([gal_arr(:,:).El]/180*pi, [1,30*L]);
     theta = reshape([gal_arr(:,:).Az]/180*pi, [1,30*L]);
-    scatter(cos(phi).*sin(phi), cos(phi).*sin(theta), 108, 'g.');
+    scatter(cos(phi).*cos(theta), cos(phi).*sin(theta), 108, 'g.');
 
     theta = 0:pi/36:2*pi;
     plot(cos(theta), sin(theta), 'LineWidth', 0.5, 'Color', [0.6 0.6 0.6]);
