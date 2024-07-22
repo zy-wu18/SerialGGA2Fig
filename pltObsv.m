@@ -18,15 +18,15 @@ function pltObsv(t, bds_arr, gps_arr, gln_arr, qzn_arr, gal_arr, pvt_arr)
     subplot(232); hold off; plot(0); hold on;
     theta = 0:pi/36:2*pi;
     plot(cos(theta), sin(theta), 'LineWidth', 0.5, 'Color', [0.6 0.6 0.6]);
-    scatter(0.866*cos(theta), 0.866*sin(theta), 1, [0.8 0.8 0.8]);
-    scatter(0.500*cos(theta), 0.500*sin(theta), 1, [0.8 0.8 0.8]);
+    scatter(0.667*cos(theta), 0.667*sin(theta), 1, [0.8 0.8 0.8]);
+    scatter(0.333*cos(theta), 0.333*sin(theta), 1, [0.8 0.8 0.8]);
     plot([-1, 1], [0, 0], 'LineWidth', 0.5, 'Color', [0.6 0.6 0.6]);
     plot([0, 0], [-1, 1], 'LineWidth', 0.5, 'Color', [0.6 0.6 0.6]);
-    scatterArrElAz2Polar(bds_arr, 108, 'r.');
-    scatterArrElAz2Polar(gps_arr, 108, 'm.');
-    scatterArrElAz2Polar(qzn_arr,  18, 'mo');
-    scatterArrElAz2Polar(gln_arr, 108, 'b.');
-    scatterArrElAz2Polar(gal_arr, 108, 'g.');
+    scatterArrElAz2Polar(bds_arr, 'C', 108, 'r.');
+    scatterArrElAz2Polar(gps_arr, 'G', 108, 'm.');
+    scatterArrElAz2Polar(qzn_arr, 'Q',  18, 'mo');
+    scatterArrElAz2Polar(gln_arr, 'R', 108, 'b.');
+    scatterArrElAz2Polar(gal_arr, 'E', 108, 'g.');
     title("Satellite skyplot");
     drawnow
 
@@ -56,12 +56,20 @@ function pltObsv(t, bds_arr, gps_arr, gln_arr, qzn_arr, gal_arr, pvt_arr)
     drawnow
 end
 
-function scatterArrElAz2Polar(s_arr, mksize, marker)
+function scatterArrElAz2Polar(s_arr, abbr, mksize, marker)
     n = size(s_arr, 1);
-    L = size(s_arr, 2);
-    phi = reshape([s_arr(:,:).El]/180*pi, [1,n*L]);
-    theta = reshape([s_arr(:,:).Az]/180*pi, [1,n*L]);
-    scatter(cos(phi).*cos(theta), cos(phi).*sin(theta), mksize, marker);
+    L = min(20, size(s_arr, 2));
+    phi = reshape(1.0-[s_arr(:,end-L+1:end).El]/90, [n, L]);
+    theta = reshape((-[s_arr(:,end-L+1:end).Az]+90)/180*pi, [n, L]);
+    for i = 1:n
+        if(all(isnan(phi(i, :))))
+            continue;
+        end
+        x = phi(i,:).*cos(theta(i,:));
+        y = phi(i,:).*sin(theta(i,:));
+        scatter(x, y, mksize, marker);
+        text(x(end), y(end), sprintf("%c%02d", abbr, i), "FontSize", 8);
+    end
 end
 
 function scatterArrStat(x, s_arr, b, mksize, marker)
