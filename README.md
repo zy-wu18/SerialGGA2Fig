@@ -1,2 +1,2 @@
-# SerialGGA2Fig
-Realtime plot $GGA data from a serial port in a MATLAB figure.
+# SerialNmea2Fig
+Realtime plot $GNRMC and $G?GSV data from a serial port in a MATLAB figure.
