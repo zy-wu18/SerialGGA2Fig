@@ -58,11 +58,13 @@ end
 
 function scatterArrElAz2Polar(s_arr, abbr, mksize, marker)
     n = size(s_arr, 1);
-    L = min(20, size(s_arr, 2));
+    L = min(5, size(s_arr, 2));
+    s_arr = s_arr(:, 1:L);
+    stat = reshape(([s_arr(:,end-L+1:end).Stat]>2), [n, L]);
     phi = reshape(1.0-[s_arr(:,end-L+1:end).El]/90, [n, L]);
     theta = reshape((-[s_arr(:,end-L+1:end).Az]+90)/180*pi, [n, L]);
     for i = 1:n
-        if(all(isnan(phi(i, :))))
+        if(isempty(find(stat(i, :), 1)))
             continue;
         end
         x = phi(i,:).*cos(theta(i,:));

@@ -32,15 +32,15 @@ function serialnmea2fig(s, fig)
         nmea_data = nmea_words(2:end-1);
         switch(nmea_type)
             case '$GBGSV' % BDS
-                bds_arr(:, i) = gsv2satobsv(nmea_data, [1, 64]);
+                bds_arr(:, i) = gsv2satobsv(nmea_data, [1, 64], bds_arr(:, i));
             case '$GPGSV' % GPS
-                gps_arr(:, i) = gsv2satobsv(nmea_data, [1, 32]);
+                gps_arr(:, i) = gsv2satobsv(nmea_data, [1, 32], gps_arr(:, i));
             case '$GQGSV' % QZSS
-                qzn_arr(:, i) = gsv2satobsv(nmea_data, [1,  4]);
+                qzn_arr(:, i) = gsv2satobsv(nmea_data, [1,  4], qzn_arr(:, i));
             case '$GLGSV' % GLONASS
-                gln_arr(:, i) = gsv2satobsv(nmea_data, [65,88]);
+                gln_arr(:, i) = gsv2satobsv(nmea_data, [65,88], gln_arr(:, i));
             case '$GAGSV' % Galileo
-                gal_arr(:, i) = gsv2satobsv(nmea_data, [1, 30]);
+                gal_arr(:, i) = gsv2satobsv(nmea_data, [1, 30], gal_arr(:, i));
             case '$GNRMC' % Recommanded compressed PVT
                 t = t + 1;
                 if(i + 1 > win_len)
